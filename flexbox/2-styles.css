@@ -383,7 +383,6 @@
   /* Section Latest news 
       ============================= */
   
-  /* target the row class inside section-latest-news */
   .section-latest-news .row {
     flex-direction: row-reverse;
   }
