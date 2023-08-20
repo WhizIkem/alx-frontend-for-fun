@@ -542,7 +542,7 @@
 
 /* target the before psuedo element of hero-article class */
 .hero-article::before {
-  content: '';
+  content: "";
   background: rgba(0, 0, 0, 0.8);
   position: absolute;
   top: 0;
@@ -552,15 +552,15 @@
   z-index: 0;
 }
 
-/* target the section-inner inside the article-hero class */
-.article-hero .section-inner {
+/* target the section-inner inside the hero-article class */
+.hero-article .section-inner {
   text-align: center;
   align-items: center;
   min-height: 40vh;
 }
 
-/* target the section-body inside the article-hero class */
-.article-hero .section-body {
+/* target the section-body inside the hero-article class */
+.hero-article .section-body {
   position: relative;
   padding: 7rem 0 0;
   z-index: 2;
