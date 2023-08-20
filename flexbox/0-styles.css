@@ -180,20 +180,26 @@
   /* Grid
       ============================= */
   
+  /* Add a selector for the row class */
+  .row {
+    display: flex;
+  }    
+
   ul.row {
     margin: 0;
     padding: 0;
     list-style: none;
   }
   
+  /* Remove the row after declaration 
   .row::after {
     content: '';
     display: table;
     clear: both;
-  }
+  } */
   
   [class*='col-'] {
-    float: left;
+    /* remove float: left; */
     padding: 0.5rem;
   }
   
