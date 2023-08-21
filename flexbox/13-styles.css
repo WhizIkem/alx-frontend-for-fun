@@ -595,7 +595,7 @@
 }
 
 /* target the strong tag inside the post-meta-list class */
-.post-meta-list .strong {
+.post-meta-list strong {
   color: var(--color-primary);
   font-size: var(--font-size-small);
   text-transform: uppercase;
