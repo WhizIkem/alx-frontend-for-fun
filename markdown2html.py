@@ -28,7 +28,7 @@ def parse_line(line):
     match_ol_item = re.match(r'\* (.+)', line)
     if match_ol_item:
         content = match_ol_item.group(1)
-        return f"<li>{content}<\li>"
+        return f"<li>{content}</li>"
 
     return line
 
@@ -44,6 +44,7 @@ def markdown_to_html(filename):
 
     for line in lines:
         line = line.strip()
+
         if line.startswith("- "):
             if not inside_ul:
                 inside_ul = True
@@ -52,7 +53,7 @@ def markdown_to_html(filename):
         elif line.startswith("* "):
             if not inside_ol:
                 inside_ol = True
-                html_lines.append("</ol>")
+                html_lines.append("<ol>")
             html_lines.append(parse_line(line))
         else:
             if inside_ul:
@@ -67,7 +68,6 @@ def markdown_to_html(filename):
         html_lines.append("</ul>")
     if inside_ol:
         html_lines.append("</ol>")
-
 
     return '\n'.join(html_lines)
 
