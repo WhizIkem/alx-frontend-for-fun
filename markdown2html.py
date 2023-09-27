@@ -10,13 +10,20 @@ import os
 import re
 
 
-def parse_headings(line):
+def parse_line(line):
     # Check for headings
-    match = re.match(r'(#+) (.+)', line)
-    if match:
-        level = len(match.group(1))
-        content = match.group(2)
+    match_heading = re.match(r'(#+) (.+)', line)
+    if match_heading:
+        level = len(match_heading.group(1))
+        content = match_heading.group(2)
         return f"<h{level}>{content}</h{level}>"
+
+    # Check for unordered list items
+    match_list_item = re.match(r'- (.+)', line)
+    if match_list_item:
+        content = match_list_item.group(1)
+        return f"<li>{content}</li>"
+
     return line
 
 
@@ -25,7 +32,26 @@ def markdown_to_html(filename):
     with open(filename, 'r') as f:
         lines = f.readlines()
 
-    html_lines = [parse_headings(line.strip()) for line in lines]
+    html_lines = []
+    inside_ul = False
+
+    for line in lines:
+        line = line.strip()
+        if line.startswith("- "):
+            if not inside_ul:
+                inside_ul = True
+                html_lines.append("<ul>")
+            html_lines.append(parse_line(line))
+        else:
+            if inside_ul:
+                inside_ul = False
+                html_lines.append("</ul>")
+            html_lines.append(parse_line(line))
+
+    if inside_ul:
+        html_lines.append("</ul>")
+
+
     return '\n'.join(html_lines)
 
 
