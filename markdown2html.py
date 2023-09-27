@@ -74,8 +74,8 @@ def markdown_to_html(filename):
                 html_lines.append(line)
             else:
                 if inside_paragraph:
-                    inside_paragraph = True
-                    html_lines.append("<p>")
+                    inside_paragraph = False
+                    html_lines.append("</p>")
                 if inside_ul:
                     inside_ul = False
                     html_lines.append("</ul>")
