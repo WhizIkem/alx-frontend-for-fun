@@ -41,33 +41,54 @@ def markdown_to_html(filename):
     html_lines = []
     inside_ul = False
     inside_ol = False
+    inside_paragraph = False
 
     for line in lines:
         line = line.strip()
 
         if line.startswith("- "):
+            if inside_paragraph:
+                html_lines.append("</p>")
+                inside_paragraph = False
+
             if not inside_ul:
                 inside_ul = True
                 html_lines.append("<ul>")
             html_lines.append(parse_line(line))
         elif line.startswith("* "):
+            if inside_paragraph:
+                html_lines.append("</p>")
+                inside_paragraph = False
+
             if not inside_ol:
                 inside_ol = True
                 html_lines.append("<ol>")
             html_lines.append(parse_line(line))
         else:
-            if inside_ul:
-                inside_ul = False
-                html_lines.append("</ul>")
-            if inside_ol:
-                inside_ol = False
-                html_lines.append("</ol>")
-            html_lines.append(parse_line(line))
+            if line:
+                if not inside_paragraph:
+                    inside_paragraph = True
+                    html_lines.append("<p>")
+                else:
+                    html_lines.append("<br />")
+                html_lines.append(line)
+            else:
+                if inside_paragraph:
+                    inside_paragraph = True
+                    html_lines.append("<p>")
+                if inside_ul:
+                    inside_ul = False
+                    html_lines.append("</ul>")
+                if inside_ol:
+                    inside_ol = False
+                    html_lines.append("</ol>")
 
     if inside_ul:
         html_lines.append("</ul>")
     if inside_ol:
         html_lines.append("</ol>")
+    if inside_paragraph:
+        html_lines.append("</p>")
 
     return '\n'.join(html_lines)
 
