@@ -15,6 +15,14 @@ def markdown_to_html(filename):
     with open(filename, 'r') as f:
         lines = f.readlines()
 
+
+    def parse_inline_styles(line):
+        # Parse bold syntax
+        line = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', line)
+        # Parse emphasis syntax
+        line = re.sub(r'__(.+?)__', r'<em>\1</em>', line)
+        return line
+
     html_lines = []
     inside_ul = False
     inside_ol = False
@@ -23,6 +31,9 @@ def markdown_to_html(filename):
     for line in lines:
         stripped_line = line.strip()
 
+        # Apply inline style parsing
+        stripped_line = parse_inline_styles(stripped_line)
+        
         # Check for headings
         match_heading = re.match(r'(#+) (.+)', stripped_line)
         if match_heading:
