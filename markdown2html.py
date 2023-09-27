@@ -11,7 +11,7 @@ import os
 def main():
     # Check is number of argument is less than 2
     if len(sys.argv) < 3:
-        print(("Usage: ./markdown2html.py"
+        print(("Usage: ./markdown2html.py "
                 "README.md README.html"), file=sys.stderr)
         sys.exit(1)
 
