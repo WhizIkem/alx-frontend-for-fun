@@ -8,6 +8,7 @@ Parse Markdown headings and return corresponding HTML
 import sys
 import os
 import re
+import hashlib
 
 
 def markdown_to_html(filename):
@@ -23,6 +24,16 @@ def markdown_to_html(filename):
         line = re.sub(r'__(.+?)__', r'<em>\1</em>', line)
         return line
 
+
+    def parse_special_styles(line):
+        # Convert content between [[ ]] into MD5 hash
+        line = re.sub(r'\[\[(.+?)\]\]', lambda m: hashlib.md5(m.group(1).encode()).hexdigest(), line)
+
+        # Remove all 'c' 'C' characters from the content between (( ))
+        line = re.sub(r'\(\((.+?)\)\)', lambda m: m.group(1).replace('c', '').replace('C', ''), line)
+
+        return line
+
     html_lines = []
     inside_ul = False
     inside_ol = False
@@ -34,6 +45,9 @@ def markdown_to_html(filename):
         # Apply inline style parsing
         stripped_line = parse_inline_styles(stripped_line)
         
+        # Apply special style parsing
+        stripped_line = parse_special_styles(stripped_line)
+
         # Check for headings
         match_heading = re.match(r'(#+) (.+)', stripped_line)
         if match_heading:
