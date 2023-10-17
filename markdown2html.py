@@ -1,36 +1,14 @@
 #!/usr/bin/python3
 """
 Script markdown2html.py that takes an argument 2 strings:
-    first argument is the name of the markdown file
-    second argument is the output file name
+    First argument is the name of the markdown file
+    Second argument is the output file name
 Parse Markdown headings and return corresponding HTML
 """
 import sys
 import os
 import re
-
-
-def parse_line(line):
-    # Check for headings
-    match_heading = re.match(r'(#+) (.+)', line)
-    if match_heading:
-        level = len(match_heading.group(1))
-        content = match_heading.group(2)
-        return f"<h{level}>{content}</h{level}>"
-
-    # Check for unordered list items
-    match_ul_item = re.match(r'- (.+)', line)
-    if match_ul_item:
-        content = match_ul_item.group(1)
-        return f"<li>{content}</li>"
-
-    # Check for ordered list items
-    match_ol_item = re.match(r'\* (.+)', line)
-    if match_ol_item:
-        content = match_ol_item.group(1)
-        return f"<li>{content}<\li>"
-
-    return line
+import hashlib
 
 
 def markdown_to_html(filename):
@@ -38,36 +16,104 @@ def markdown_to_html(filename):
     with open(filename, 'r') as f:
         lines = f.readlines()
 
+
+    def parse_inline_styles(line):
+        # Parse bold syntax
+        line = re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', line)
+        # Parse emphasis syntax
+        line = re.sub(r'__(.+?)__', r'<em>\1</em>', line)
+        return line
+
+
+    def parse_special_styles(line):
+        # Convert content between [[ ]] into MD5 hash
+        line = re.sub(r'\[\[(.+?)\]\]', lambda m: hashlib.md5(m.group(1).encode()).hexdigest(), line)
+
+        # Remove all 'c' 'C' characters from the content between (( ))
+        line = re.sub(r'\(\((.+?)\)\)', lambda m: m.group(1).replace('c', '').replace('C', ''), line)
+
+        return line
+
     html_lines = []
     inside_ul = False
     inside_ol = False
+    inside_paragraph = False
 
     for line in lines:
-        line = line.strip()
-        if line.startswith("- "):
+        stripped_line = line.strip()
+
+        # Apply inline style parsing
+        stripped_line = parse_inline_styles(stripped_line)
+        
+        # Apply special style parsing
+        stripped_line = parse_special_styles(stripped_line)
+
+        # Check for headings
+        match_heading = re.match(r'(#+) (.+)', stripped_line)
+        if match_heading:
+            level = len(match_heading.group(1))
+            content = match_heading.group(2)
+            parsed_line = f"<h{level}>{content}</h{level}>"
+            if inside_paragraph:  # Close paragraph if open
+                html_lines.append("</p>")
+                inside_paragraph = False
+            html_lines.append(parsed_line)
+            continue  # Skip the rest of the loop for this line
+
+        # Check for unordered list items
+        match_ul_item = re.match(r'- (.+)', stripped_line)
+        if match_ul_item:
+            content = match_ul_item.group(1)
+            parsed_line = f"<li>{content}</li>"
+            if inside_paragraph:
+                html_lines.append("</p>")
+                inside_paragraph = False
             if not inside_ul:
                 inside_ul = True
                 html_lines.append("<ul>")
-            html_lines.append(parse_line(line))
-        elif line.startswith("* "):
+            html_lines.append(parsed_line)
+            continue  # Skip the rest of the loop for this line
+
+        # Check for ordered list items
+        match_ol_item = re.match(r'\* (.+)', stripped_line)
+        if match_ol_item:
+            content = match_ol_item.group(1)
+            parsed_line = f"<li>{content}</li>"
+            if inside_paragraph:
+                html_lines.append("</p>")
+                inside_paragraph = False
             if not inside_ol:
                 inside_ol = True
-                html_lines.append("</ol>")
-            html_lines.append(parse_line(line))
-        else:
+                html_lines.append("<ol>")
+            html_lines.append(parsed_line)
+            continue  # Skip the rest of the loop for this line
+
+        # Handling paragraphs
+        if stripped_line:  # If line is not empty
+            if not inside_paragraph:
+                inside_paragraph = True
+                html_lines.append("<p>")
+            else:
+                html_lines.append("<br />")
+            html_lines.append(stripped_line)
+        else:  # Empty line, should close any open tags
+            if inside_paragraph:
+                inside_paragraph = False
+                html_lines.append("</p>")
             if inside_ul:
                 inside_ul = False
                 html_lines.append("</ul>")
             if inside_ol:
                 inside_ol = False
                 html_lines.append("</ol>")
-            html_lines.append(parse_line(line))
 
+    # Closing tags in case the file ends with a list or paragraph
     if inside_ul:
         html_lines.append("</ul>")
     if inside_ol:
         html_lines.append("</ol>")
-
+    if inside_paragraph:
+        html_lines.append("</p>")
 
     return '\n'.join(html_lines)
 
@@ -76,7 +122,7 @@ def main():
     # Check is number of argument is less than 2
     if len(sys.argv) < 3:
         print(("Usage: ./markdown2html.py "
-                "README.md README.html"), file=sys.stderr)
+               "README.md README.html"), file=sys.stderr)
         sys.exit(1)
 
     input_file = sys.argv[1]
@@ -95,5 +141,7 @@ def main():
     # If all checks pass
     sys.exit(0)
 
+
 if __name__ == "__main__":
     main()
+
