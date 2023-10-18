@@ -179,6 +179,7 @@
                         name="your-last-name"
                         id="your-last-name"
                         placeholder="e.g. Smith"
+                        pattern="[A-Za-zÀ-ž\s]{3,}"
                         maxlength="40"
                         autocomplete="on"
                         accesskey="l"
@@ -197,7 +198,7 @@
                         id="your-email"
                         placeholder="e.g. youremail@gmail.com"
                         pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-                        maxlength="35"
+                        maxlength="55"
                         autocomplete="on"
                         accesskey="e"
                         required
@@ -236,10 +237,10 @@
                         name="your-comment"
                         id="your-comment"
                         placeholder="Write your comment here"
-                        minimumlength="10"
+                        minlength="10"
                         accesskey="c"
                         required
-                        columns="30"
+                        cols="30"
                         rows="6"
                       ></textarea>
                     </span>
