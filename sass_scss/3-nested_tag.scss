@@ -1,0 +1,11 @@
+// Sass file with nested declaration for margin and padding
+
+body {
+  margin: 0;
+  padding: 0;
+  
+  p {
+    margin: 10px;
+  }
+}
+
