@@ -1,0 +1,29 @@
+// Sort and print a list of Sass
+
+@import 'list_to_sort';
+
+@function sort_strings($list) {
+  $sorted_list: ();
+  
+  @for $i from 1 through length($list) {
+    $min-value: nth($list, 1);
+    $min-index: 1;
+
+  @for $j from 2 through length($list) {
+    $current-value: nth($list, $j);
+    
+    @if $current-value < $min-value {
+      $min-value: $current-value;
+      $min-index: $j;
+    }
+  }
+
+  $sorted_list: append($sorted_list, $min-value);
+  $list: join(nth($list, 1, $min-index) nth($list, $min-index + 1), ' ');
+}
+
+@return $sorted_list;
+}
+
+$sorted_list: sort_strings($list_to_sort);
+@debug $sorted_list;
