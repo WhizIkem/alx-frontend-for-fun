@@ -1,0 +1,12 @@
+// Sass file with nested declaration for font size
+
+body {
+  font-size: 14px;
+
+  hi {
+    font-size: 16px;
+    &.smaller {
+      font-size: 12px;
+    }
+  }
+}
