@@ -1,0 +1,9 @@
+// Sass file that create a class for each name in the $list-names
+
+@import "11-loop_photos";
+
+@each $name, $photo in $list-names {
+  .photo-#{$name} {
+    background: image-url($photo) no repeat;
+  }
+}
